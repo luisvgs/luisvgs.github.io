@@ -1,0 +1,30 @@
+# The URL the site will be built for
+base_url = "https://example.com"
+title = "Luis' Blog"
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = false
+theme = "no-style-please"
+[markdown]
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = true
+
+taxonomies = [
+    { name = "tags" },
+    { name = "categories" },
+]
+
+[extra]
+header_nav = [
+    { name = "~home", url = "/" },
+    { name = "+posts", url = "/posts" },
+]
+footer_nav = [
+    { name = "< previous", url = "#" },
+    { name = "webring", url = "#" },
+    { name = "next >", url = "#" },
+]
+

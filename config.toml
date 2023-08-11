@@ -1,4 +1,4 @@
-base_url = "https://luisvgs.github.io/blog/"
+base_url = "https://luisvgs.github.io"
 title = "Luis' Blog"
 theme = "no-style-please"
 compile_sass = true

@@ -82,10 +82,7 @@
     rel="alternate" type="application/atom+xml" title="RSS" href="{{
     get_url(path="atom.xml", trailing_slash=false) }}"> {% endblock feed %} {%
     endif %} {% block css %}
-    <link
-      rel="stylesheet"
-      href="{{ get_url(path='style.css', trailing_slash=false) | safe }}"
-    />
+    <link rel="stylesheet" href="./style.css" />
     {% endblock css %}
   </head>
   <body theme="auto">

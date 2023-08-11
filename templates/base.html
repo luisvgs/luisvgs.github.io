@@ -81,9 +81,8 @@
     {% endblock metatags %} {% if config.generate_feed %} {% block feed %} <link
     rel="alternate" type="application/atom+xml" title="RSS" href="{{
     get_url(path="atom.xml", trailing_slash=false) }}"> {% endblock feed %} {%
-    endif %} {% block css %}
-    <link rel="stylesheet" href="./style.css" />
-    {% endblock css %}
+    endif %} {% block css %} <link rel="stylesheet" href="{{
+    get_url(path="style.css") | safe }}"> {% endblock css %}
   </head>
   <body theme="light">
     <div class="w">

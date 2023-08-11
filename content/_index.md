@@ -15,4 +15,3 @@ about :)
 
 - Email: [luisvegasmor@gmail.com](mailto:luisvegasmor@gmail.com)
 - Github: [github.com/luisvgs](https://github.com/luisvgs)
-- LinkedIn: [linkedin.com/in/luisvsg](https://www.linkedin.com/in/luisvsg/)

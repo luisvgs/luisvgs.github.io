@@ -8,10 +8,11 @@ process, share some of my notes and thoughts about my current projects or anythi
 about :)
 
 - Posts
-  - [Writing a programming language](./pl-design-0)
+  - [Writing Marta: Part 1](./pl-design-0)
   - [Implementing a type checker](./language-tests)
 
 ### Online presence
+
 - Email: [luisvegasmor@gmail.com](mailto:luisvegasmor@gmail.com)
 - Github: [github.com/luisvgs](https://github.com/luisvgs)
 - LinkedIn: [linkedin.com/in/luisvsg](https://www.linkedin.com/in/luisvsg/)

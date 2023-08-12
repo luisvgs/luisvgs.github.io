@@ -8,8 +8,8 @@ process, share some of my notes and thoughts about my current projects or anythi
 about :)
 
 - Posts
-  - [Writing Marta: Part 1](./pl-design-0)
-  - [Implementing a type checker](./language-tests)
+  - [Writing Marta: a retrospective](./pl-design-0)
+  <!-- - [Jules: my own Lisp flavor](./jules) -->
 
 ### Online presence
 

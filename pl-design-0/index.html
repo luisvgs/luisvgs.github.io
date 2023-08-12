@@ -1,0 +1,46 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="IE=edge" http-equiv=X-UA-Compatible><meta content="text/html; charset=UTF-8" http-equiv=content-type><meta content="width=device-width,initial-scale=1" name=viewport><title>Writing Marta: an overview</title><meta content="Writing Marta: an overview" name=title><meta content="Luis Vegas" name=author><meta content="Zola v0.16.1" name=generator><meta content=website property=og:type><meta content=https://luisvgs.github.io/pl-design-0/ property=og:url><meta content="Luis' Blog" property=og:site_name><meta content="Writing Marta: an overview" property=og:title><meta content=summary_large_image property=twitter:card><meta content=https://luisvgs.github.io/pl-design-0/ property=twitter:url><meta content="Writing Marta: an overview" property=twitter:title><link href=https://luisvgs.github.io/pl-design-0/ rel=canonical><script type=application/ld+json>
+      {
+          
+          "url":"https://luisvgs.github.io/pl-design-0/",
+          "@type":"WebSite",
+          "headline":"Writing Marta: an overview",
+          "name":"Writing Marta: an overview",
+          "author":{
+              "@type":"Person",
+              "name":"Luis Vegas"
+          },
+          "@context":"https://schema.org"
+      }
+    </script><link href=https://luisvgs.github.io/atom.xml rel=alternate title=RSS type=application/atom+xml><link href=https://luisvgs.github.io/style.css rel=stylesheet><body theme=light><div class=w><header><nav><a href=/>~home</a><a href=/posts>+posts</a></nav><p><a href=..>..</a>/pl-design-0<p class=post-meta><time datetime=2020-07-07>2020-07-07</time><h1>Writing Marta: an overview</h1></header><main aria-label=Content class=page-content><p>The past few months I've been working on my own programming language, called Marta. This is one of my many iterations of implementing a working PL, and so far I'm happy enough to share with you my progress. With this post I expect to share briefly some of my design decisions whilst working on the language, as well as what the future holds for my project.<h2 id=the-syntax>The syntax</h2><p>If you are familiar with Scala or Rust, Marta's syntax will be no stranger for you. Take the following snippet as an example:<pre style=background:#2b303b;color:#c0c5ce><code><span>let baz: Int = 20;
+</span><span>let foo: Int = |a| => { a + baz };
+</span><span>
+</span><span>println(foo(10)) // 30
+</span></code></pre><p>As you may intuitively deduce, the code above assigns baz of type int, a value of 20. Followed by a declaration of lambda foo, which receives a as a parameter and sums them both. Finally, it prints the result.<p>Pretty simple, isn't it?<h2 id=parsing>Parsing</h2><p>In initial stages, I opted for writing my own parser and lexer however, I intended Marta's syntax to be strictly typed for now. That is, one should indicate the type of an expression (also known as ascription in the literature) during its initialization. This implied the lexing process to be troublesome when writing more complex expressions. I opted for <code>lalrpop</code> as my main tool to generate the parser.<p>The AST is generated from the following grammar:<pre class=language-rust data-lang=rust style=background:#2b303b;color:#c0c5ce><code class=language-rust data-lang=rust><span style=color:#b48ead>pub</span><span> Stmt: Stmt = {
+</span><span>    &LTexpr:Expr> "</span><span style=color:#a3be8c>;</span><span>"? => Stmt::Expr(expr),
+</span><span>    "</span><span style=color:#a3be8c>let</span><span>" &LTname:Ident> "</span><span style=color:#a3be8c>:</span><span>" &LTt:Ascription> "</span><span style=color:#a3be8c>=</span><span>" &LTrhs:Expr> "</span><span style=color:#a3be8c>;</span><span>"?
+</span><span>    => Stmt::Assign(name, rhs, t),
+</span><span>    &LTvariable:Ident> "</span><span style=color:#a3be8c>=</span><span>" &LTrhs:Expr> "</span><span style=color:#a3be8c>;</span><span>"
+</span><span>    => Stmt::ReAssign(variable, rhs),
+</span><span>    "</span><span style=color:#a3be8c>fn</span><span>" &LTi:Ident> &LTargs:ParamList> "</span><span style=color:#a3be8c>=></span><span>" &LTreturn_type:Ascription> &LTstmts:Block>
+</span><span>    => Stmt::Func(i, args, stmts, return_type),
+</span><span>    ...
+</span><span>}
+</span><span>
+</span><span style=color:#b48ead>pub</span><span> Ascription: Ascription = {
+</span><span>    "</span><span style=color:#a3be8c>int</span><span>" => Ascription::Int,
+</span><span>    "</span><span style=color:#a3be8c>bool</span><span>" => Ascription::Bool,
+</span><span>    "</span><span style=color:#a3be8c>string</span><span>" => Ascription::Str,
+</span><span>    ...
+</span><span>}
+</span><span>
+</span><span style=color:#b48ead>pub</span><span> Expr_: Expr = {
+</span><span>    ...
+</span><span>    &LTf:Ident> "</span><span style=color:#a3be8c>(</span><span>" &LTargs:ExprList> "</span><span style=color:#a3be8c>)</span><span>"
+</span><span>    => Expr::Call(Call::Function(Function {func: f, args: args})),
+</span><span>    &LTi:'reduce'> &LTlist:Expr_>
+</span><span>    => Expr::Call(Call::Function(Function {func: i.</span><span style=color:#96b5b4>to_string</span><span>(), args: vec![ list ]})),
+</span><span>    "</span><span style=color:#a3be8c>|</span><span>" &LTargs:ParamList> "</span><span style=color:#a3be8c>|</span><span>" "</span><span style=color:#a3be8c>=></span><span>" &LTstmts:Block>
+</span><span>    => Expr::Function(args, stmts),
+</span><span>    ...
+</span><span>}
+</span></code></pre><p>Definitely some improvements can be made.<h1 id=type-checking>Type checking</h1><p>As of today, Marta implements basic type checking in which the evaluation of primitives such as int, bool and string is trivial. If by any chance an incorrect operation is performed, the program will panic.<p>It's within my plans to implement a Hindley-Milner type system for the language, this way explicit type annotation will not always be necessary and the language would feel more natural and expressive.<h1 id=conclusions>Conclusions</h1><p>Writing my own programming language has been a beast of a task. I'm glad how this project is coming along. Learning about type systems has been a complete joyful experience, although beginner friendly material is hard to find, one can make its own way to grasp the basics little by little. I'm still not convinced with some design decisions I made, for example: error handling lacks of some edge cases; the way the AST is being interpreted is perhaps not the most efficient way. I'll be doing some research to improve these funcionalities in the meantime. With that being said, Marta is so far the project I'm mostly proud of. As next steps you can expect some nice features in the short-mid term: a hindley milner type system, expand the standard library with some built-in methods, a backend compiler.<p><hr \ data-content=references><sup class=footnote-reference><a href=#1>1</a></sup>: <a href=https://www.cis.upenn.edu/~bcpierce/tapl/>Types and Programming Languages by Benjamin Pierce</a><h1></h1><div class=footnote-definition id=2><sup class=footnote-definition-label>2</sup><p><a href=https://craftinginterpreters.com/>Crafting Interpreters by Robert Nystrom</a></div></main><footer><p class=taxonomies><nav><a href=#>< previous</a><a href=#>webring</a><a href=#>next ></a></nav></footer></div>
